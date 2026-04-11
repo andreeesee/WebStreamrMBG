@@ -48,7 +48,7 @@ class MegaKino extends Source_1.Source {
     label = 'MegaKino';
     contentTypes = ['movie'];
     countryCodes = [types_1.CountryCode.de];
-    baseUrl = 'https://megakino1.to';
+    baseUrl = 'https://megakino2.biz/';
     fetcher;
     constructor(fetcher) {
         super();
@@ -62,6 +62,8 @@ class MegaKino extends Source_1.Source {
         const imdbId = await (0, utils_1.getImdbId)(ctx, this.fetcher, id);
         const tokenResponse = await this.fetcher.fetch(ctx, new URL('/?yg=token', await this.getBaseUrl(ctx)), { method: 'HEAD' });
         const cookie = tough_cookie_1.Cookie.parse(tokenResponse.headers['set-cookie'][0]);
+        if (!cookie)
+            return [];
         const pageUrl = await this.fetchPageUrl(ctx, imdbId, cookie);
         if (!pageUrl) {
             return [];
@@ -69,12 +71,31 @@ class MegaKino extends Source_1.Source {
         const html = await this.fetcher.text(ctx, pageUrl, { headers: { Cookie: cookie.cookieString() } });
         const $ = cheerio.load(html);
         const title = $('meta[property="og:title"]').attr('content')?.trim();
-        return Promise.all($(`.video-inside iframe`)
-            .map((_i, el) => new URL(($(el).attr('data-src') ?? $(el).attr('src'))))
-            .toArray()
-            .map(url => ({ url, meta: { countryCodes: [types_1.CountryCode.de], referer: pageUrl.href, title } })));
+        // FIXED: Extract all available hosters (Voe, Doodstream, etc.)
+        return $('.pmovie__player .tabs-block__content iframe')
+            .map((_i, el) => {
+            const src = $(el).attr('data-src') ?? $(el).attr('src');
+            if (!src || src.trim() === '' || src.includes('about:blank')) {
+                return null;
+            }
+            try {
+                return new URL(src.trim());
+            }
+            catch {
+                return null;
+            }
+        })
+            .get()
+            .filter((url) => url !== null)
+            .map(url => ({
+            url,
+            meta: {
+                countryCodes: [types_1.CountryCode.de],
+                referer: pageUrl.href,
+                title
+            }
+        }));
     }
-    ;
     fetchPageUrl = async (ctx, imdbId, cookie) => {
         const form = new URLSearchParams();
         form.append('do', 'search');

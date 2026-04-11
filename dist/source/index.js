@@ -28,6 +28,7 @@ const HomeCine_1 = require("./HomeCine");
 const KinoGer_1 = require("./KinoGer");
 const Kokoshka_1 = require("./Kokoshka");
 const MegaKino_1 = require("./MegaKino");
+const FilmpalastTO_1 = require("./FilmpalastTO");
 const MeineCloud_1 = require("./MeineCloud");
 const MostraGuarda_1 = require("./MostraGuarda");
 const Movix_1 = require("./Movix");
@@ -59,6 +60,7 @@ const createSources = (fetcher) => {
         new MegaKino_1.MegaKino(fetcher),
         new MeineCloud_1.MeineCloud(fetcher),
         new StreamKiste_1.StreamKiste(fetcher),
+        new FilmpalastTO_1.FilmpalastTO(fetcher),
         // FR
         new Frembed_1.Frembed(fetcher),
         new FrenchCloud_1.FrenchCloud(fetcher),

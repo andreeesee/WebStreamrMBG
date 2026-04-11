@@ -52,14 +52,57 @@ class MeineCloud extends Source_1.Source {
     async handleInternal(ctx, _type, id) {
         const imdbId = await (0, utils_1.getImdbId)(ctx, this.fetcher, id);
         const pageUrl = new URL(`/movie/${imdbId.id}`, this.baseUrl);
-        const html = await this.fetcher.text(ctx, pageUrl);
-        const $ = cheerio.load(html);
-        return Promise.all($('[data-link!=""]')
-            .map((_i, el) => new URL($(el).attr('data-link').replace(/^(https:)?\/\//, 'https://')))
-            .toArray()
-            .filter(url => !url.host.match(/meinecloud/))
-            .map(url => ({ url, meta: { countryCodes: [types_1.CountryCode.de], referer: this.baseUrl } })));
+        try {
+            // IMPORTANT: Pass the URL object directly (not .toString())
+            const html = await this.fetcher.text(ctx, pageUrl, {
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+                    'Accept-Language': 'de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7',
+                    'Referer': 'https://meinecloud.click/',
+                    'Sec-Fetch-Site': 'same-origin',
+                    'Sec-Fetch-Mode': 'navigate',
+                    'Sec-Fetch-Dest': 'document',
+                    'Upgrade-Insecure-Requests': '1',
+                },
+                timeout: 15000,
+            });
+            const $ = cheerio.load(html);
+            const results = [];
+            $('[data-link!=""]').each((_i, el) => {
+                let link = $(el).attr('data-link')?.trim();
+                if (!link)
+                    return;
+                if (link.startsWith('//')) {
+                    link = 'https:' + link;
+                }
+                else if (!link.startsWith('http')) {
+                    link = 'https://' + link;
+                }
+                try {
+                    const url = new URL(link);
+                    // Skip internal links
+                    if (url.host.includes('meinecloud')) {
+                        return;
+                    }
+                    results.push({
+                        url: url, // Must be URL object
+                        meta: {
+                            countryCodes: [types_1.CountryCode.de],
+                            referer: this.baseUrl
+                        }
+                    });
+                }
+                catch (e) {
+                    // invalid URL, skip
+                }
+            });
+            return results;
+        }
+        catch (error) {
+            console.error(`[MeineCloud] Error fetching ${pageUrl.href}:`, error.message || error);
+            return [];
+        }
     }
-    ;
 }
 exports.MeineCloud = MeineCloud;

@@ -11,6 +11,7 @@ import { HomeCine } from './HomeCine';
 import { KinoGer } from './KinoGer';
 import { Kokoshka } from './Kokoshka';
 import { MegaKino } from './MegaKino';
+import { FilmpalastTO } from './FilmpalastTO';
 import { MeineCloud } from './MeineCloud';
 import { MostraGuarda } from './MostraGuarda';
 import { Movix } from './Movix';
@@ -46,6 +47,7 @@ export const createSources = (fetcher: Fetcher): Source[] => {
     new MegaKino(fetcher),
     new MeineCloud(fetcher),
     new StreamKiste(fetcher),
+    new FilmpalastTO(fetcher),
     // FR
     new Frembed(fetcher),
     new FrenchCloud(fetcher),
