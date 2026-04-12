@@ -18,7 +18,7 @@
       "automerge": true
     },
     {
-     "description": "Update types once per week",
+      "description": "Update types once per week",
       "matchDatasources": ["npm"],
       "matchPackageNames": ["/^@types/"],
       "extends": ["schedule:weekly"]
@@ -28,6 +28,11 @@
       "matchDatasources": ["npm"],
       "matchPackageNames": ["/^user-agents$/"],
       "extends": ["schedule:monthly"]
+    },
+    {
+      "description": "Pin proxy agents below ESM-only versions",
+      "matchPackageNames": ["http-proxy-agent", "https-proxy-agent"],
+      "allowedVersions": "<8"
     }
   ]
 }
