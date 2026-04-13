@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.70.1](https://github.com/newman2x/WebStreamrMBG/compare/v0.70.0...v0.70.1) (2026-04-13)
+
+
+### Bug Fixes
+
+* redesign configure UI with toggle chips ([2abb93c](https://github.com/newman2x/WebStreamrMBG/commit/2abb93cdf4c9d84efa07a7eba92853ef85a6ca5f))
+* redesign configure UI with toggle chips ([bbc8c6e](https://github.com/newman2x/WebStreamrMBG/commit/bbc8c6e255efe4a75dafad4652f80d22d0ef9394))
+
 ## [0.70.0](https://github.com/newman2x/WebStreamrMBG/compare/v0.69.1...v0.70.0) (2026-04-13)
 
 
