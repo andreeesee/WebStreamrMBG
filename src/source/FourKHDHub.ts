@@ -75,7 +75,13 @@ export class FourKHDHub extends Source {
 
     const $ = cheerio.load(html);
 
-    return $(`.movie-card:has(.movie-card-format:contains("${tmdbId.season ? 'Series' : 'Movies'}"))`)
+    const typeSlug = tmdbId.season ? '-series-' : '-movie-';
+
+return $(`.movie-card`)
+  .filter((_i, el) => {
+    const href = String($(el).attr('href'));
+    return href.includes(typeSlug);
+  })
       .filter((_i, el) => {
         const movieCardYear = parseInt($('.movie-card-meta', el).text());
 
