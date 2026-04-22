@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import memoize from 'memoizee';
 import { ContentType } from 'stremio-addon-sdk';
 import { Context, CountryCode, Meta } from '../types';
 import { Fetcher, findCountryCodes, getImdbId, Id, ImdbId } from '../utils';
@@ -24,7 +25,7 @@ export class HDHub4u extends Source {
 
   public readonly countryCodes: CountryCode[] = [CountryCode.multi, CountryCode.gu, CountryCode.hi, CountryCode.ml, CountryCode.pa, CountryCode.ta, CountryCode.te];
 
-  public readonly baseUrl = 'https://new5.hdhub4u.fo';
+  public readonly baseUrl = 'https://new6.hdhub4u.fo';
 
   private readonly searchUrl = 'https://search.pingora.fyi';
 
@@ -34,6 +35,10 @@ export class HDHub4u extends Source {
     super();
 
     this.fetcher = fetcher;
+    this.getBaseUrl = memoize(this.getBaseUrl, {
+      maxAge: 3600000, // 1 hour
+      normalizer: () => 'baseUrl',
+    });
   }
 
   public async handleInternal(ctx: Context, _type: string, id: Id): Promise<SourceResult[]> {
@@ -101,8 +106,9 @@ export class HDHub4u extends Source {
   };
 
   private readonly fetchPageUrls = async (ctx: Context, imdbId: ImdbId): Promise<URL[]> => {
+    const baseUrl = await this.getBaseUrl(ctx);
     const searchUrl = new URL(`/collections/post/documents/search?query_by=imdb_id&q=${encodeURIComponent(imdbId.id)}`, this.searchUrl);
-    const searchResponse = await this.fetcher.json(ctx, searchUrl, { headers: { Referer: this.baseUrl } }) as SearchResponsePartial;
+    const searchResponse = await this.fetcher.json(ctx, searchUrl, { headers: { Referer: baseUrl.href } }) as SearchResponsePartial;
 
     return searchResponse.hits
       .filter(hit =>
@@ -114,6 +120,10 @@ export class HDHub4u extends Source {
           || hit.document.post_title.includes(`S${String(imdbId.season).padStart(2, '0')}`)
         ),
       )
-      .map(hit => new URL(hit.document.permalink, this.baseUrl));
+      .map(hit => new URL(hit.document.permalink, baseUrl));
+  };
+
+  private readonly getBaseUrl = async (ctx: Context) => {
+    return await this.fetcher.getFinalRedirectUrl(ctx, new URL(this.baseUrl));
   };
 }

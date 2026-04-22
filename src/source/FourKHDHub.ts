@@ -19,7 +19,7 @@ export class FourKHDHub extends Source {
 
   public readonly countryCodes: CountryCode[] = [CountryCode.multi, CountryCode.hi, CountryCode.ta, CountryCode.te];
 
-  public readonly baseUrl = 'https://4khdhub.dad';
+  public readonly baseUrl = 'https://4khdhub.click';
 
   private readonly fetcher: Fetcher;
 

@@ -393,50 +393,78 @@ exports[`FourKHDHub handle dust bunny 1`] = `
 [
   {
     "meta": {
+      "bytes": 21270825533,
       "countryCodes": [
         "multi",
         "en",
-      ],
-      "height": 1080,
-      "title": "Dust.Bunny.2025.1080p.iT.WEB-DL.English.DDP5.1.Atmos.H.264-4kHDHub.Com.mkv",
-    },
-    "url": "https://hubcloud.foo/drive/lo89bsn98fp9gt1",
-  },
-  {
-    "meta": {
-      "bytes": 19746112143,
-      "countryCodes": [
-        "multi",
-        "en",
+        "hi",
+        "ta",
+        "te",
       ],
       "height": 2160,
-      "title": "Dust.Bunny.2025.2160p.iT.WEB-DL.English.DDP5.1.Atmos.DV.HDR.H.265-4kHDHub.Com.mkv",
+      "title": "Dust.Bunny.2025.2160p.iT.WEB-DL.MULTi.DDP5.1.Atmos.DV.HDR.H.265-4kHdHub.Com.mkv",
     },
-    "url": "https://hubcloud.foo/drive/tgeemytzlxgtyal",
+    "url": "https://hubcloud.foo/drive/1ccg71bfegvg5b5",
   },
   {
     "meta": {
-      "bytes": 12498354831,
+      "bytes": 14023068221,
       "countryCodes": [
         "multi",
         "en",
+        "hi",
+        "ta",
+        "te",
       ],
       "height": 2160,
-      "title": "Dust.Bunny.2025.2160p.AMZN.WEB-DL.English.DDP5.1.Atmos.H.265-4kHDHub.Com.mkv",
+      "title": "Dust.Bunny.2025.2160p.AMZN.WEB-DL.MULTi.DDP5.1.Atmos.H.265-4kHdHub.Com.mkv",
     },
-    "url": "https://hubcloud.foo/drive/giejj9shsc9i777",
+    "url": "https://hubcloud.foo/drive/lpajaei37paul6i",
   },
   {
     "meta": {
-      "bytes": 4155380858,
+      "bytes": 10007273799,
       "countryCodes": [
         "multi",
         "en",
+        "hi",
+        "ta",
+        "te",
       ],
       "height": 1080,
-      "title": "Dust.Bunny.2025.1080p.AMZN.WEB-DL.English.DDP5.1.Atmos.H.264-4kHDHub.Com.mkv",
+      "title": "Dust.Bunny.2025.1080p.iT.WEB-DL.MULTi.DDP5.1.Atmos.H.264-4kHdHub.Com.mkv",
     },
-    "url": "https://hubcloud.foo/drive/xd2ndhiin1w8fbd",
+    "url": "https://hubcloud.foo/drive/uvxdbgbhsm154ms",
+  },
+  {
+    "meta": {
+      "bytes": 5583457484,
+      "countryCodes": [
+        "multi",
+        "en",
+        "hi",
+        "ta",
+        "te",
+      ],
+      "height": 1080,
+      "title": "DUST.BUNNY.2026.1080p.AMZN.WEB-DL.Multi.DDP5.1.H.264-4kHdHub.Com.mkv",
+    },
+    "url": "https://hubcloud.foo/drive/actdbq2ir2x8wkk",
+  },
+  {
+    "meta": {
+      "bytes": 2866890670,
+      "countryCodes": [
+        "multi",
+        "en",
+        "hi",
+        "ta",
+        "te",
+      ],
+      "height": 1080,
+      "title": "DUST.BUNNY.2026.1080p.AMZN.WEB-DL.Multi.DDP5.1.H.265-4kHdHub.Com.mkv",
+    },
+    "url": "https://hubcloud.foo/drive/xiym1yhr1przff9",
   },
 ]
 `;
@@ -582,7 +610,34 @@ exports[`FourKHDHub handle lovely runner 2024 s01e01 1`] = `
 ]
 `;
 
-exports[`FourKHDHub handle non-existent devil's bath 2024 gracefully 1`] = `[]`;
+exports[`FourKHDHub handle non-existent devil's bath 2024 gracefully 1`] = `
+[
+  {
+    "meta": {
+      "bytes": 3639984783,
+      "countryCodes": [
+        "multi",
+        "hi",
+      ],
+      "height": 1080,
+      "title": "The Devil's Bride (2025) 1080p NF WEB-DL [Org HS Hindi DDP 2.0 + Indonesia AAC 2.0] x264 (KQRM-4kHdHub).mkv",
+    },
+    "url": "https://hubcloud.foo/drive/oyoihio51n0tkfk",
+  },
+  {
+    "meta": {
+      "bytes": 683430379,
+      "countryCodes": [
+        "multi",
+        "hi",
+      ],
+      "height": 1080,
+      "title": "The Devil's Bride (2025) 1080p NF WEB-DL HEVC [Org HS Hindi DDP 2.0 + Indonesia AAC 2.0] x265 4kHdHub.mkv",
+    },
+    "url": "https://hubcloud.foo/drive/hmmni7ccj8inkzr",
+  },
+]
+`;
 
 exports[`FourKHDHub handle stranger things s05e08 1`] = `
 [
