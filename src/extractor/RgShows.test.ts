@@ -21,4 +21,8 @@ describe('RgShows', () => {
   test('handle parasite 2019 (mp4)', async () => {
     expect(await extractorRegistry.handle(ctx, new URL('https://api.rgshows.ru/main/movie/496243'))).toMatchSnapshot();
   });
+
+  test('handle unknown format', async () => {
+    expect(await extractorRegistry.handle(ctx, new URL('https://api.rgshows.ru/main/movie/000001'))).toMatchSnapshot();
+  });
 });

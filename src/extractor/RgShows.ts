@@ -37,7 +37,7 @@ export class RgShows extends Extractor {
     return [
       {
         url: streamUrl,
-        format: isMp4 ? Format.mp4 : (isHls ? Format.hls : /* istanbul ignore next */ Format.unknown),
+        format: isMp4 ? Format.mp4 : (isHls ? Format.hls : Format.unknown),
         meta: {
           ...meta,
           ...(isHls && { height: meta.height ?? await guessHeightFromPlaylist(ctx, this.fetcher, streamUrl, { headers }) }),

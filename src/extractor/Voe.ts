@@ -156,7 +156,7 @@ export class Voe extends Extractor {
     const title = $('meta[name="description"]').attr('content')?.trim().replace(/^Watch /, '').replace(/ at VOE$/, '').trim();
 
     const sizeMatch = html.matchAll(/[\d.]+ ?[GM]B/g).toArray().at(-1);
-    const size = sizeMatch ? bytes.parse(sizeMatch[0] as string) as number : /* istanbul ignore next */null;
+    const size = sizeMatch ? bytes.parse(sizeMatch[0] as string) as number : null;
 
     const playlistUrl = await buildMediaFlowProxyExtractorStreamUrl(ctx, this.fetcher, 'Voe', url, headers);
 

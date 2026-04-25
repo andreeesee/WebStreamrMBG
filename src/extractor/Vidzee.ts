@@ -200,9 +200,9 @@ export class Vidzee extends Extractor {
     const tvIndex = pathParts.indexOf('tv');
 
     if (movieIndex !== -1 && pathParts[movieIndex + 1]) {
-      tmdbId = pathParts[movieIndex + 1] ?? /* istanbul ignore next */ null;
+      tmdbId = pathParts[movieIndex + 1] as string;
     } else if (tvIndex !== -1 && pathParts[tvIndex + 1]) {
-      tmdbId = pathParts[tvIndex + 1] ?? /* istanbul ignore next */ null;
+      tmdbId = pathParts[tvIndex + 1] as string;
       season = pathParts[tvIndex + 2] ?? /* istanbul ignore next */ null;
       episode = pathParts[tvIndex + 3] ?? /* istanbul ignore next */ null;
     }

@@ -29,4 +29,8 @@ describe('Voe', () => {
   test('embed only urls which otherwise lead to 404', async () => {
     expect(await extractorRegistry.handle(ctx, new URL('https://mikaylaarealike.com/e/gqlhm9hbobwu'))).toMatchSnapshot();
   });
+
+  test('no file size in page', async () => {
+    expect(await extractorRegistry.handle(ctx, new URL('https://jilliandescribecompany.com/nosize123'))).toMatchSnapshot();
+  });
 });
