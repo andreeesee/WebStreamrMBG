@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.72.1](https://github.com/newman2x/WebStreamrMBG/compare/v0.72.0...v0.72.1) (2026-04-27)
+
+
+### Bug Fixes
+
+* HubCloud ([9eb184c](https://github.com/newman2x/WebStreamrMBG/commit/9eb184c85bde25d7d4384c8d771ee61e3954503a))
+
 ## [0.72.0](https://github.com/newman2x/WebStreamrMBG/compare/v0.71.0...v0.72.0) (2026-04-26)
 
 
