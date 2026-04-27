@@ -1,21 +1,26 @@
 import * as cheerio from 'cheerio';
 import { Context, Format, InternalUrlResult, Meta } from '../types';
-import { extractUrlFromPacked, guessHeightFromPlaylist } from '../utils';
+import { guessHeightFromPlaylist } from '../utils';
 import { Extractor } from './Extractor';
 
-export class Vidora extends Extractor {
-  public readonly id = 'vidora';
+function decodeHexUrl(hexString: string): string {
+  const joined = hexString.split('|').join('');
+  let decoded = '';
+  for (let i = 0; i < joined.length; i += 2) {
+    decoded += String.fromCharCode(parseInt(joined.substring(i, i + 2), 16));
+  }
+  return decoded.split('').reverse().join('');
+}
 
-  public readonly label = 'Vidora';
+export class Vidsonic extends Extractor {
+  public readonly id = 'vidsonic';
+
+  public readonly label = 'Vidsonic';
 
   public override readonly ttl: number = 43200000; // 12h
 
   public supports(_ctx: Context, url: URL): boolean {
-    return null !== url.host.match(/vidora/);
-  }
-
-  public override normalize(url: URL): URL {
-    return new URL(url.href.replace('/embed/', '/'));
+    return null !== url.host.match(/vidsonic/);
   }
 
   protected async extractInternal(ctx: Context, url: URL, meta: Meta): Promise<InternalUrlResult[]> {
@@ -24,7 +29,12 @@ export class Vidora extends Extractor {
     const $ = cheerio.load(html);
     const title = $('title').text().trim().replace(/^Watch /, '').trim();
 
-    const m3u8Url = extractUrlFromPacked(html, [/file: ?"(.*?)"/]);
+    const hexMatch = html.match(/const _0x1\s*=\s*'([^']+)'/);
+    if (!hexMatch || !hexMatch[1]) {
+      throw new Error('Could not find hex-encoded video URL in Vidsonic page');
+    }
+
+    const m3u8Url = new URL(decodeHexUrl(hexMatch[1]));
     const headers = { Origin: url.origin };
 
     return [
@@ -39,5 +49,5 @@ export class Vidora extends Extractor {
         requestHeaders: headers,
       },
     ];
-  };
+  }
 }
