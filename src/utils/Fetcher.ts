@@ -91,6 +91,10 @@ export class Fetcher {
     };
   };
 
+  public setCookie(url: string | URL, cookieString: string): void {
+    this.cookieJar.setCookieSync(cookieString, typeof url === 'string' ? url : url.href);
+  }
+
   public async fetch(ctx: Context, url: URL, requestConfig?: CustomRequestConfig): Promise<AxiosResponse> {
     return await this.queuedFetch(ctx, url, requestConfig);
   };

@@ -9,9 +9,9 @@ export class HubDrive extends Extractor {
 
   public readonly label = 'HubDrive';
 
-  public override readonly ttl: number = 900000; // 15m
+  public override readonly ttl: number = 120000; // 2 min
 
-  public override readonly cacheVersion = 1;
+  public override readonly cacheVersion = 2;
 
   private readonly hubCloud: HubCloud;
 

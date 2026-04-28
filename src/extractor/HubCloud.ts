@@ -4,12 +4,19 @@ import { Context, Format, InternalUrlResult, Meta } from '../types';
 import { findCountryCodes, findHeight } from '../utils';
 import { Extractor } from './Extractor';
 
+const HUBCLOUD_CACHE_TTL = 120000; // 2 minutes
+
+/** Delay before retrying Hop 1 after a failed Hop 2 (ms). */
+const RETRY_DELAY_MS = 2500;
+
 export class HubCloud extends Extractor {
   public readonly id = 'hubcloud';
 
   public readonly label = 'HubCloud';
 
-  public override readonly cacheVersion = 6;
+  public override readonly cacheVersion = 7;
+
+  public override readonly ttl = HUBCLOUD_CACHE_TTL;
 
   public supports(_ctx: Context, url: URL): boolean {
     return null !== url.host.match(/hubcloud/);
@@ -24,18 +31,40 @@ export class HubCloud extends Extractor {
       return [];
     }
 
-    const linksHtml = await this.fetcher.text(ctx, new URL(redirectUrl), { headers: { Referer: url.href } });
-    const $ = cheerio.load(linksHtml);
+    const cookieName = this.extractCookieName(redirectHtml);
+    if (cookieName) {
+      this.fetcher.setCookie(redirectUrl, `${cookieName}=s4t`);
+    }
+
+    let linksHtml = await this.fetcher.text(ctx, new URL(redirectUrl), { headers: { Referer: url.href } });
+    let $ = cheerio.load(linksHtml);
+
+    // If the download links page doesn't contain expected content (e.g., no #size element
+    // and no download links), it may be a token-expired error page. Retry once.
+    if (!this.hasValidDownloadContent($)) {
+      // Wait a moment, then re-fetch Hop 1 to get a fresh token
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
+
+      const retryHtml = await this.fetcher.text(ctx, url, { headers });
+      const retryRedirectUrl = this.extractRedirectUrl(retryHtml);
+      if (retryRedirectUrl) {
+        if (cookieName) {
+          this.fetcher.setCookie(retryRedirectUrl, `${cookieName}=s4t`);
+        }
+        linksHtml = await this.fetcher.text(ctx, new URL(retryRedirectUrl), { headers: { Referer: url.href } });
+        $ = cheerio.load(linksHtml);
+      }
+
+      // If still no valid content after retry, return empty (don't cache a failure)
+      if (!this.hasValidDownloadContent($)) {
+        return [];
+      }
+    }
 
     const title = $('title').text().trim();
     const countryCodes = [...new Set([...meta.countryCodes ?? [], ...findCountryCodes(title)])];
     const height = meta.height ?? findHeight(title);
     const fileSize = bytes.parse($('#size').text()) as number;
-
-    const fslTtl = (href: string): number => {
-      void href;
-      return 900000; // 15 min
-    };
 
     return Promise.all([
       ...$('a')
@@ -44,11 +73,11 @@ export class HubCloud extends Extractor {
           return text.includes('FSL') && !text.includes('FSLv2');
         })
         .map((_i, el) => {
-          const fslHref = ($(el).attr('href') as string) + '1' + new Date(Date.now()).getMinutes();
+          const fslHref = $(el).attr('href') as string;
           return {
             url: new URL(fslHref),
             format: Format.unknown,
-            ttl: fslTtl(fslHref),
+            ttl: HUBCLOUD_CACHE_TTL,
             label: `${this.label} (FSL)`,
             meta: { ...meta, bytes: fileSize, extractorId: `${this.id}_fsl`, countryCodes, height, title },
           };
@@ -56,11 +85,11 @@ export class HubCloud extends Extractor {
       ...$('a')
         .filter((_i, el) => $(el).text().includes('FSLv2'))
         .map((_i, el) => {
-          const fslHref = ($(el).attr('href') as string) + '_1' + new Date(Date.now()).getMinutes();
+          const fslHref = $(el).attr('href') as string;
           return {
             url: new URL(fslHref),
             format: Format.unknown,
-            ttl: fslTtl(fslHref),
+            ttl: HUBCLOUD_CACHE_TTL,
             label: `${this.label} (FSLv2)`,
             meta: { ...meta, bytes: fileSize, extractorId: `${this.id}_fslv2`, countryCodes, height, title },
           };
@@ -104,6 +133,33 @@ export class HubCloud extends Extractor {
       return locationMatch[1] as string;
     }
 
+    // Pattern 3: location.replace('https://...')
+    const replaceMatch = html.match(/location\.replace\(['"](.*?)['"]\)/);
+    if (replaceMatch) {
+      return replaceMatch[1] as string;
+    }
+
+    // Pattern 4: <meta http-equiv="refresh" content="0;url=https://...">
+    const metaRefreshMatch = html.match(/<meta[^>]*http-equiv=["']?refresh["']?[^>]*content=["']?\d+;\s*url=(.*?)["']/i);
+    if (metaRefreshMatch) {
+      return metaRefreshMatch[1] as string;
+    }
+
+    // Pattern 5: document.location = 'https://...'
+    const docLocationMatch = html.match(/document\.location(?:\.href)? ?= ?['"](.*?)['"]/);
+    if (docLocationMatch) {
+      return docLocationMatch[1] as string;
+    }
+
     return null;
+  }
+
+  private extractCookieName(html: string): string | null {
+    const cookieMatch = html.match(/stck\(\s*['"](\w+)['"]\s*,/);
+    return cookieMatch ? (cookieMatch[1] as string) : null;
+  }
+
+  private hasValidDownloadContent($: cheerio.CheerioAPI): boolean {
+    return $('#size').length > 0 || $('a:contains("FSL")').length > 0 || $('a:contains("PixelServer")').length > 0;
   }
 }
