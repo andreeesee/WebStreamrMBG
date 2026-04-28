@@ -10,23 +10,15 @@ const extractorRegistry = new ExtractorRegistry(logger, [new FileMoon(new Fetche
 const ctx = createTestContext({ mediaFlowProxyUrl: 'https://mediaflow.test.org', mediaFlowProxyPassword: 'test' });
 
 describe('FileMoon', () => {
-  test('extracts stream from API with playback data', async () => {
+  test('extracts stream via MediaFlow extractor', async () => {
     expect(await extractorRegistry.handle(ctx, new URL('https://filemoon.sx/e/c5lhlypfasmm'))).toMatchSnapshot();
   });
 
-  test('handles video not found gracefully', async () => {
+  test('supports alternative domain', async () => {
+    expect(await extractorRegistry.handle(ctx, new URL('https://z1ekv717.fun/d/wkhcbggdxf1d'))).toMatchSnapshot();
+  });
+
+  test('handles extraction failure gracefully', async () => {
     expect(await extractorRegistry.handle(ctx, new URL('https://filemoon.sx/e/n7i8zodwjqr9'))).toMatchSnapshot();
-  });
-
-  test('handles video without playback data gracefully', async () => {
-    expect(await extractorRegistry.handle(ctx, new URL('https://filemoon.sx/e/testnostream'))).toMatchSnapshot();
-  });
-
-  test('handles decrypted playback with no sources gracefully', async () => {
-    expect(await extractorRegistry.handle(ctx, new URL('https://filemoon.sx/e/emptysources'))).toMatchSnapshot();
-  });
-
-  test('handles non-HLS sources gracefully', async () => {
-    expect(await extractorRegistry.handle(ctx, new URL('https://filemoon.sx/e/onlymp4'))).toMatchSnapshot();
   });
 });
